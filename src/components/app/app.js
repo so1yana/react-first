@@ -10,9 +10,9 @@ export default class App extends Component {
 
     state = {
         todos: [
-            {id: 1, editing: false, checked: true, 'label': 'Completed task', 'created': '5 seconds ago'},
-            {id: 2, editing: true, checked: false, 'label': 'Editing task', 'created': '4 minutes ago'},
-            {id: 3, editing: false, checked: false, 'label': 'Active task', 'created': '5 minutes ago'},
+            {id: 1, editing: false, checked: true, label: 'Completed task', created: '5 seconds ago'},
+            {id: 2, editing: true, checked: false, label: 'Editing task', created: '4 minutes ago'},
+            {id: 3, editing: false, checked: false, label: 'Active task', created: '5 minutes ago'},
         ],
         filter: 'All',
     };
@@ -25,6 +25,19 @@ export default class App extends Component {
         this.setState(() => ({
             todos: newArr
         }));
+    };
+
+    editItem = (id, text) => {
+        const newArr = this.state.todos.map((elem) => {
+            if (elem.id === id) elem.label = text;
+            return elem;
+        });
+
+        this.setState(() => {
+            return {
+                todos: newArr
+            };
+        });
     };
 
     deleteItem = (id) => {
@@ -49,6 +62,7 @@ export default class App extends Component {
                     todos={ this.state.todos }
                     itemCompleted={ this.itemCompleted }
                     deleteItem={ this.deleteItem }
+                    editItem={ this.editItem }
                 />
                 <Footer />
             </section>

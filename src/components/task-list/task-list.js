@@ -7,12 +7,18 @@ export default class TaskList extends Component {
 
     render() {
         
-        const { todos, itemCompleted, deleteItem } = this.props;
+        const { todos, itemCompleted, deleteItem, editItem } = this.props;
 
         const elements = todos.map((item) => {
 
             return (
-                <Task key={item.id} itemCompleted={itemCompleted} deleteItem={deleteItem} { ...item } />
+                <Task 
+                    key={item.id} 
+                    itemCompleted={itemCompleted} 
+                    deleteItem={deleteItem} 
+                    editItem={editItem}
+                    { ...item } 
+                />
             );
             
         });
