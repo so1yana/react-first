@@ -9,27 +9,37 @@ import './app.css';
 export default class App extends Component {
 
     state = {
-        todos: [
-            {id: 1, editing: false, checked: true, label: 'Completed task', created: '5 seconds ago'},
-            {id: 2, editing: true, checked: false, label: 'Editing task', created: '4 minutes ago'},
-            {id: 3, editing: false, checked: false, label: 'Active task', created: '5 minutes ago'},
-        ],
+        todos: [],
         filter: 'All',
     };
 
-    itemCompleted = (id, checked) => {
-        const newArr = this.state.todos.map((elem) => {
-            if (elem.id === id) elem.checked = checked;
-            return elem;
-        });
-        this.setState(() => ({
-            todos: newArr
-        }));
+    makeItem = (label) => {
+        const {todos} = this.state;
+        let id = 1;
+        if (todos.length > 0) id = todos[todos.length - 1].id + 1;
+        return {
+            id: id,
+            editing: false,
+            checked: false,
+            label: label,
+            created: Date.now().toString(),
+        };
     };
 
-    editItem = (id, text) => {
+    addItem = (label) => {
+        const oldArr = JSON.parse(JSON.stringify(this.state.todos));
+        const newItem = this.makeItem(label);
+        const newArr = [...oldArr, newItem];
+
+        this.setState(() => ({todos: newArr}))
+    }
+
+    makeNewArray = (id, value) => {
         const newArr = this.state.todos.map((elem) => {
-            if (elem.id === id) elem.label = text;
+            if (elem.id === id) {
+                if (typeof value === 'string') elem.label = value;
+                else if (typeof value === 'boolean') elem.checked = value;
+            };
             return elem;
         });
 
@@ -38,6 +48,14 @@ export default class App extends Component {
                 todos: newArr
             };
         });
+    }
+
+    itemCompleted = (id, checked) => {
+        this.makeNewArray(id, checked);
+    };
+
+    editItem = (id, text) => {
+        this.makeNewArray(id, text);
     };
 
     deleteItem = (id) => {
@@ -53,18 +71,57 @@ export default class App extends Component {
         });
     };
 
+    deleteAllCheckedTasks = () => {
+        const { todos } = this.state;
+        const newArr = todos.filter((el) => {
+            return true ? !el.checked : false;
+        });
+
+        this.setState({
+            todos: newArr,
+        });
+    };
+
+    filterItems = () => {
+        const { todos, filter } = this.state;
+
+        if (filter === 'All') return todos;
+        
+        const newArr = todos.filter((el) => {
+            if (filter === 'Active') return !el.checked ? true : false;
+            else if (filter === 'Completed') return el.checked ? true : false;
+        });
+
+        return newArr;
+    };
+
+    changeFilter = (filter) => {
+        this.setState({
+            filter: filter,
+        });
+    };
+
     render() {
+
+        const itemsLeft = this.state.todos.reduce((acc, el) => {
+            return !el.checked ? ++acc : acc;
+        }, 0);
 
         return (
             <section className='todoapp'>
-                <NewTaskForm />
+                <NewTaskForm addItem={ this.addItem }/>
                 <TaskList 
-                    todos={ this.state.todos }
+                    todos={ this.filterItems() }
                     itemCompleted={ this.itemCompleted }
                     deleteItem={ this.deleteItem }
                     editItem={ this.editItem }
                 />
-                <Footer />
+                <Footer 
+                    filter={this.state.filter}
+                    changeFilter={this.changeFilter}
+                    itemsLeft={itemsLeft}
+                    deleteAllCheckedTasks={this.deleteAllCheckedTasks}
+                />
             </section>
         );
     };
