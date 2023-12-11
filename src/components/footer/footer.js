@@ -1,8 +1,21 @@
 import { Component } from "react";
 import TaskFilter from "../task-filter/task-filter";
+import PropTypes from 'prop-types';
 import './footer.css';
 
 export default class Footer extends Component {
+
+    static defaultProps = {
+        itemsLeft: 0,
+        filter: 'All',
+    };
+
+    static propTypes = {
+        itemsLeft: PropTypes.number,
+        changeFilter: PropTypes.func.isRequired,
+        filter: PropTypes.string,
+        deleteAllCheckedTasks: PropTypes.func.isRequired,
+    };
 
     render() {
 
@@ -20,5 +33,6 @@ export default class Footer extends Component {
                     className='clear-completed'>Clear completed</button>
             </footer>
         );
-    }
+    };
+
 };

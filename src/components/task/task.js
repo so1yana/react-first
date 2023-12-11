@@ -1,11 +1,21 @@
 import { Component } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import PropTypes from 'prop-types';
 
 import './task.css';
 
 export default class Task extends Component {
 
+    static propTypes = {
+        id: PropTypes.number.isRequired,
+        checked: PropTypes.bool.isRequired,
+        created: PropTypes.instanceOf(Date).isRequired,
+        itemCompleted: PropTypes.func.isRequired,
+        deleteItem: PropTypes.func.isRequired,
+    };
+
     state = {
-        editing: this.props.editing,
+        editing: false,
         text: this.props.label,
     };
 
@@ -24,10 +34,18 @@ export default class Task extends Component {
         return this.setState(() => ({editing: true}));
     };
 
+    formateDate(date) {
+        return formatDistanceToNow(date, {
+            includeSeconds: true,
+            addSuffix: true,
+        });
+    };
+
     render() {
 
         const { id, checked, created, itemCompleted, deleteItem } = this.props;
         const { editing, text } = this.state;
+
         return (
             <li className={checked ? 'completed' : editing ? 'editing' : null}>
                 <div className='view' onClick={ () => itemCompleted(id, !checked)}>
@@ -39,7 +57,7 @@ export default class Task extends Component {
                     />
                     <label>
                         <span className='description'>{text}</span>
-                        <span className='created'>{created}</span>
+                        <span className="created">{`created ${this.formateDate(created)}`}</span>
                     </label>
                     <button 
                         className='icon icon-edit'

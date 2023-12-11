@@ -19,15 +19,14 @@ export default class App extends Component {
         if (todos.length > 0) id = todos[todos.length - 1].id + 1;
         return {
             id: id,
-            editing: false,
             checked: false,
             label: label,
-            created: Date.now().toString(),
+            created: new Date(),
         };
     };
 
     addItem = (label) => {
-        const oldArr = JSON.parse(JSON.stringify(this.state.todos));
+        const oldArr = this.state.todos.map((el) => el);
         const newItem = this.makeItem(label);
         const newArr = [...oldArr, newItem];
 
@@ -86,13 +85,13 @@ export default class App extends Component {
         const { todos, filter } = this.state;
 
         if (filter === 'All') return todos;
-        
-        const newArr = todos.filter((el) => {
-            if (filter === 'Active') return !el.checked ? true : false;
-            else if (filter === 'Completed') return el.checked ? true : false;
-        });
-
-        return newArr;
+        else {
+            return todos.filter((el) => {
+                if (filter === 'Active') return !el.checked ? true : false;
+                else if (filter === 'Completed') return el.checked ? true : false;
+                else return todos;
+            });
+        };
     };
 
     changeFilter = (filter) => {
